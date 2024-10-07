@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 import pickle
 from keras.api.datasets import mnist
-from model import cnn  # Make sure this import works
+from model import cnn
 import os
 
 # Enable Metal GPU support
@@ -30,19 +30,14 @@ def calculate_accuracy(params, predict_fn, images, labels):
     return jnp.mean(predictions == labels)
 
 def main():
-    # Load test data
     _, (test_images, test_labels) = mnist.load_data()
-
-    # Normalize and move data to GPU
     with jax.default_device(jax.devices()[0]):
         test_images = normalize_images(test_images)
         test_labels = jnp.array(test_labels, dtype=jnp.int32)
 
-    # Load the trained model
     model_file = 'mnist_cnn_params.pkl'
     loaded_weights, predict_fn = load_model(model_file)
 
-    # Calculate and print accuracy
     accuracy = calculate_accuracy(loaded_weights, predict_fn, test_images, test_labels)
     print(f"Test Accuracy: {accuracy:.4f}")
 
